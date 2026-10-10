@@ -151,6 +151,10 @@ def render(now, hourly, daily, fx):
     A("table{width:100%;border-collapse:collapse;margin-top:4px;}")
     A("th,td{border:1px solid #000;padding:3px 4px;text-align:center;font-size:14px;}")
     A("th{font-size:13px;}")
+    A(".rt th,.rt td{font-size:12px;padding:2px 3px;}")
+    A(".colL{float:left;width:64%;}")
+    A(".colR{float:right;width:34%;}")
+    A(".clear{clear:both;}")
     A(".foot{font-size:11px;margin-top:12px;border-top:2px solid #000;padding-top:4px;}")
     A("a{color:#000;}")
     A("</style></head><body>")
@@ -163,6 +167,7 @@ def render(now, hourly, daily, fx):
     if cur is None:
         A("<h2>即時天氣</h2><p>天氣數據首次更新中，請稍後再試。</p>")
     else:
+        A("<div class=\"colL\">")
         A("<h2>即時天氣</h2>")
         A("<div class=\"bignum\">%s°C</div>" % esc_num(cur.get("screenTemperature")))
         A("<div class=\"cond\">%s</div>" % wx_text(cur.get("significantWeatherCode")))
@@ -180,10 +185,12 @@ def render(now, hourly, daily, fx):
                 t.hour, wx_text(e.get("significantWeatherCode")),
                 esc_num(e.get("screenTemperature")), esc_num(e.get("probOfPrecipitation"))))
         A("</table>")
+        A("</div>")
 
+        A("<div class=\"colR\">")
         if days:
             A("<h2>未來5日</h2>")
-            A("<table><tr><th>日期</th><th>日間</th><th>夜間</th><th>最高</th><th>最低</th></tr>")
+            A("<table class=\"rt\"><tr><th>日期</th><th>日間</th><th>夜間</th><th>最高</th><th>最低</th></tr>")
             for d in days:
                 t = parse_time(d["time"])
                 A("<tr><td>%d/%d<br>%s</td><td>%s</td><td>%s</td><td>%s°C</td><td>%s°C</td></tr>" % (
@@ -194,13 +201,16 @@ def render(now, hourly, daily, fx):
             A("</table>")
 
     A("<h2>港元滙率</h2>")
-    A("<table>")
+    A("<table class=\"rt\">")
     A("<tr><th>貨幣</th><th>滙率</th></tr>")
     A("<tr><td>英鎊 GBP</td><td>1 GBP = %.3f HKD</td></tr>" % fx["gbp"])
     A("<tr><td>歐元 EUR</td><td>1 EUR = %.3f HKD</td></tr>" % fx["eur"])
     A("<tr><td>日圓 JPY</td><td>100 JPY = %.2f HKD</td></tr>" % fx["jpy100"])
     A("</table>")
     A("<p class=\"meta\">滙率日期：%s（Frankfurter／歐洲央行參考價）</p>" % fx["date"])
+    if cur is not None:
+        A("</div>")
+        A("<div class=\"clear\"></div>")
 
     A("<p class=\"foot\">天氣數據：UK Met Office　滙率：Frankfurter　每小時自動更新<br>")
     A("<a href=\"\">撳呢度即時重新整理</a></p>")
