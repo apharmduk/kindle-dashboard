@@ -239,8 +239,8 @@ def render(now, hourly, daily, fx):
         for L in fx_lines:
             A(L)
     else:
-        A("<div class=\"cur\"><span class=\"bignum\">%s°C</span> %s</div>" % (
-            esc_num(cur.get("screenTemperature")), wx_icon(cur.get("significantWeatherCode"), 30)))
+        A("<div class=\"cur\"><span class=\"bignum\">%s°C</span> <span class=\"cond\">%s</span></div>" % (
+            esc_num(cur.get("screenTemperature")), wx_text(cur.get("significantWeatherCode"))))
         A("<p class=\"meta\">體感 %s°C　濕度 %s%%　降雨機率 %s%%　風速 %s km/h</p>" % (
             esc_num(cur.get("feelsLikeTemperature")),
             esc_num(cur.get("screenRelativeHumidity")),
@@ -256,7 +256,7 @@ def render(now, hourly, daily, fx):
             for e in chunk:
                 t = parse_time(e["time"])
                 A("<tr><td>%02d:00</td><td>%s</td><td>%s°C</td><td>%s%%</td></tr>" % (
-                    t.hour, wx_icon(e.get("significantWeatherCode"), 20),
+                    t.hour, wx_text(e.get("significantWeatherCode")),
                     esc_num(e.get("screenTemperature")), esc_num(e.get("probOfPrecipitation"))))
             A("</table></td>")
         A("</tr></table>")
@@ -269,8 +269,8 @@ def render(now, hourly, daily, fx):
                 t = parse_time(d["time"])
                 A("<tr><td>%d/%d %s</td><td>%s</td><td>%s</td><td>%s°C</td><td>%s°C</td></tr>" % (
                     t.month, t.day, WEEKDAY[t.weekday()],
-                    wx_icon(d.get("daySignificantWeatherCode"), 20),
-                    wx_icon(d.get("nightSignificantWeatherCode"), 20),
+                    wx_text(d.get("daySignificantWeatherCode")),
+                    wx_text(d.get("nightSignificantWeatherCode")),
                     esc_num(d.get("dayMaxScreenTemperature")), esc_num(d.get("nightMinScreenTemperature"))))
             A("</table>")
         A("</td><td class=\"lc\" width=\"50%\" valign=\"top\">")
