@@ -141,36 +141,43 @@ def render(now, hourly, daily, fx):
     A('<meta http-equiv="refresh" content="3600">')
     A("<title>Leeds 天氣＋滙率</title>")
     A("<style>")
-    A("body{font-family:sans-serif;color:#000;background:#fff;margin:0;padding:8px 10px;font-size:15px;line-height:1.3;}")
-    A("h1{font-size:22px;margin:0 0 2px 0;}")
-    A("h2{font-size:17px;margin:12px 0 4px 0;border-bottom:2px solid #000;padding-bottom:2px;}")
-    A(".updated{font-size:12px;margin:0 0 4px 0;}")
-    A(".bignum{font-size:38px;font-weight:bold;margin:4px 0;}")
-    A(".cond{font-size:19px;font-weight:bold;}")
-    A(".meta{font-size:13px;}")
-    A("table{width:100%;border-collapse:collapse;margin-top:4px;}")
-    A("th,td{border:1px solid #000;padding:3px 4px;text-align:center;font-size:14px;}")
-    A("th{font-size:13px;}")
-    A(".rt th,.rt td{font-size:12px;padding:2px 3px;}")
-    A(".colL{float:left;width:64%;}")
-    A(".colR{float:right;width:34%;}")
-    A(".clear{clear:both;}")
-    A(".foot{font-size:11px;margin-top:12px;border-top:2px solid #000;padding-top:4px;}")
+    A("body{font-family:sans-serif;color:#000;background:#fff;margin:0;padding:6px 8px;font-size:14px;line-height:1.3;}")
+    A("h1{font-size:20px;margin:0 0 2px 0;}")
+    A("h1 .updated{font-size:11px;font-weight:normal;}")
+    A("h2{font-size:15px;margin:8px 0 3px 0;border-bottom:2px solid #000;padding-bottom:2px;}")
+    A(".cur{margin:2px 0;}")
+    A(".bignum{font-size:28px;font-weight:bold;}")
+    A(".cond{font-size:16px;font-weight:bold;}")
+    A(".meta{font-size:12px;margin:2px 0;}")
+    A("table{width:100%;border-collapse:collapse;margin-top:3px;}")
+    A("th,td{border:1px solid #000;padding:2px 3px;text-align:center;font-size:12px;}")
+    A("th{font-size:11px;}")
+    A("table.lt{margin-top:0;}")
+    A("td.lc{border:0;vertical-align:top;padding:2px;}")
+    A(".foot{font-size:10px;margin-top:8px;border-top:2px solid #000;padding-top:3px;}")
     A("a{color:#000;}")
     A("</style></head><body>")
 
-    A("<h1>Leeds 天氣</h1>")
-    A("<p class=\"updated\">更新時間：%d年%d月%d日 %02d:%02d（%s）</p>" % (
-        now.year, now.month, now.day, now.hour, now.minute,
-        "BST" if now.dst() else "GMT"))
+    A("<h1>Leeds 天氣 <span class=\"updated\">更新：%d月%d日 %02d:%02d（%s）· v4</span></h1>" % (
+        now.month, now.day, now.hour, now.minute, "BST" if now.dst() else "GMT"))
+
+    fx_lines = []
+    fx_lines.append("<h2>港元滙率</h2>")
+    fx_lines.append("<table>")
+    fx_lines.append("<tr><th>貨幣</th><th>滙率</th></tr>")
+    fx_lines.append("<tr><td>英鎊 GBP</td><td>1 GBP = %.3f HKD</td></tr>" % fx["gbp"])
+    fx_lines.append("<tr><td>歐元 EUR</td><td>1 EUR = %.3f HKD</td></tr>" % fx["eur"])
+    fx_lines.append("<tr><td>日圓 JPY</td><td>100 JPY = %.2f HKD</td></tr>" % fx["jpy100"])
+    fx_lines.append("</table>")
+    fx_lines.append("<p class=\"meta\">滙率日期：%s（Frankfurter）</p>" % fx["date"])
 
     if cur is None:
-        A("<h2>即時天氣</h2><p>天氣數據首次更新中，請稍後再試。</p>")
+        A("<p>天氣數據首次更新中，請稍後再試。</p>")
+        for L in fx_lines:
+            A(L)
     else:
-        A("<div class=\"colL\">")
-        A("<h2>即時天氣</h2>")
-        A("<div class=\"bignum\">%s°C</div>" % esc_num(cur.get("screenTemperature")))
-        A("<div class=\"cond\">%s</div>" % wx_text(cur.get("significantWeatherCode")))
+        A("<div class=\"cur\"><span class=\"bignum\">%s°C</span> <span class=\"cond\">%s</span></div>" % (
+            esc_num(cur.get("screenTemperature")), wx_text(cur.get("significantWeatherCode"))))
         A("<p class=\"meta\">體感 %s°C　濕度 %s%%　降雨機率 %s%%　風速 %s km/h</p>" % (
             esc_num(cur.get("feelsLikeTemperature")),
             esc_num(cur.get("screenRelativeHumidity")),
@@ -178,41 +185,37 @@ def render(now, hourly, daily, fx):
             wind_kmh(cur.get("windSpeed10m"), None)))
 
         A("<h2>今日逐小時（%d月%d日 %s）</h2>" % (now.month, now.day, WEEKDAY[now.weekday()]))
-        A("<table><tr><th>時間</th><th>天氣</th><th>溫度</th><th>降雨機率</th></tr>")
-        for e in rows:
-            t = parse_time(e["time"])
-            A("<tr><td>%02d:00</td><td>%s</td><td>%s°C</td><td>%s%%</td></tr>" % (
-                t.hour, wx_text(e.get("significantWeatherCode")),
-                esc_num(e.get("screenTemperature")), esc_num(e.get("probOfPrecipitation"))))
-        A("</table>")
-        A("</div>")
+        mid = (len(rows) + 1) // 2
+        A("<table class=\"lt\"><tr>")
+        for chunk in (rows[:mid], rows[mid:]):
+            A("<td class=\"lc\" width=\"50%\" valign=\"top\"><table>")
+            A("<tr><th>時間</th><th>天氣</th><th>溫度</th><th>降雨機率</th></tr>")
+            for e in chunk:
+                t = parse_time(e["time"])
+                A("<tr><td>%02d:00</td><td>%s</td><td>%s°C</td><td>%s%%</td></tr>" % (
+                    t.hour, wx_text(e.get("significantWeatherCode")),
+                    esc_num(e.get("screenTemperature")), esc_num(e.get("probOfPrecipitation"))))
+            A("</table></td>")
+        A("</tr></table>")
 
-        A("<div class=\"colR\">")
+        A("<table class=\"lt\"><tr><td class=\"lc\" width=\"50%\" valign=\"top\">")
         if days:
             A("<h2>未來5日</h2>")
-            A("<table class=\"rt\"><tr><th>日期</th><th>日間</th><th>夜間</th><th>最高</th><th>最低</th></tr>")
+            A("<table><tr><th>日期</th><th>日間</th><th>夜間</th><th>最高</th><th>最低</th></tr>")
             for d in days:
                 t = parse_time(d["time"])
-                A("<tr><td>%d/%d<br>%s</td><td>%s</td><td>%s</td><td>%s°C</td><td>%s°C</td></tr>" % (
+                A("<tr><td>%d/%d %s</td><td>%s</td><td>%s</td><td>%s°C</td><td>%s°C</td></tr>" % (
                     t.month, t.day, WEEKDAY[t.weekday()],
                     wx_text(d.get("daySignificantWeatherCode")),
                     wx_text(d.get("nightSignificantWeatherCode")),
                     esc_num(d.get("dayMaxScreenTemperature")), esc_num(d.get("nightMinScreenTemperature"))))
             A("</table>")
+        A("</td><td class=\"lc\" width=\"50%\" valign=\"top\">")
+        for L in fx_lines:
+            A(L)
+        A("</td></tr></table>")
 
-    A("<h2>港元滙率</h2>")
-    A("<table class=\"rt\">")
-    A("<tr><th>貨幣</th><th>滙率</th></tr>")
-    A("<tr><td>英鎊 GBP</td><td>1 GBP = %.3f HKD</td></tr>" % fx["gbp"])
-    A("<tr><td>歐元 EUR</td><td>1 EUR = %.3f HKD</td></tr>" % fx["eur"])
-    A("<tr><td>日圓 JPY</td><td>100 JPY = %.2f HKD</td></tr>" % fx["jpy100"])
-    A("</table>")
-    A("<p class=\"meta\">滙率日期：%s（Frankfurter／歐洲央行參考價）</p>" % fx["date"])
-    if cur is not None:
-        A("</div>")
-        A("<div class=\"clear\"></div>")
-
-    A("<p class=\"foot\">天氣數據：UK Met Office　滙率：Frankfurter　每小時自動更新<br>")
+    A("<p class=\"foot\">天氣：UK Met Office　滙率：Frankfurter　每小時自動更新 · v4<br>")
     A("<a href=\"\">撳呢度即時重新整理</a></p>")
     A("</body></html>")
     return "\n".join(p)
