@@ -15,11 +15,16 @@ h2{font-size:17px;margin:12px 0 4px 0;border-bottom:2px solid #000;padding-botto
 table{width:100%;border-collapse:collapse;margin-top:4px;}
 th,td{border:1px solid #000;padding:3px 4px;text-align:center;font-size:14px;}
 th{font-size:13px;}
+.rt th,.rt td{font-size:12px;padding:2px 3px;}
+.colL{float:left;width:64%;}
+.colR{float:right;width:34%;}
+.clear{clear:both;}
 .foot{font-size:11px;margin-top:12px;border-top:2px solid #000;padding-top:4px;}
 a{color:#000;}
 </style></head><body>
 <h1>Leeds 天氣</h1>
-<p class="updated">更新時間：2026年10月10日 01:36（BST）</p>
+<p class="updated">更新時間：2026年10月10日 01:44（BST）</p>
+<div class="colL">
 <h2>即時天氣</h2>
 <div class="bignum">11°C</div>
 <div class="cond">多雲夜</div>
@@ -50,8 +55,10 @@ a{color:#000;}
 <tr><td>22:00</td><td>多雲夜</td><td>10°C</td><td>5%</td></tr>
 <tr><td>23:00</td><td>晴夜</td><td>9°C</td><td>1%</td></tr>
 </table>
+</div>
+<div class="colR">
 <h2>未來5日</h2>
-<table><tr><th>日期</th><th>日間</th><th>夜間</th><th>最高</th><th>最低</th></tr>
+<table class="rt"><tr><th>日期</th><th>日間</th><th>夜間</th><th>最高</th><th>最低</th></tr>
 <tr><td>10/10<br>週六</td><td>驟雨</td><td>晴夜</td><td>12°C</td><td>7°C</td></tr>
 <tr><td>10/11<br>週日</td><td>間中有雲</td><td>多雲</td><td>14°C</td><td>9°C</td></tr>
 <tr><td>10/12<br>週一</td><td>多雲</td><td>多雲夜</td><td>17°C</td><td>15°C</td></tr>
@@ -59,13 +66,15 @@ a{color:#000;}
 <tr><td>10/14<br>週三</td><td>多雲</td><td>多雲</td><td>18°C</td><td>13°C</td></tr>
 </table>
 <h2>港元滙率</h2>
-<table>
+<table class="rt">
 <tr><th>貨幣</th><th>滙率</th></tr>
 <tr><td>英鎊 GBP</td><td>1 GBP = 10.375 HKD</td></tr>
 <tr><td>歐元 EUR</td><td>1 EUR = 8.794 HKD</td></tr>
 <tr><td>日圓 JPY</td><td>100 JPY = 4.96 HKD</td></tr>
 </table>
 <p class="meta">滙率日期：2026-10-09（Frankfurter／歐洲央行參考價）</p>
+</div>
+<div class="clear"></div>
 <p class="foot">天氣數據：UK Met Office　滙率：Frankfurter　每小時自動更新<br>
 <a href="">撳呢度即時重新整理</a></p>
 </body></html>
