@@ -1,0 +1,31 @@
+name: Hourly dashboard update
+
+on:
+  schedule:
+    # every hour at :07 UTC
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate dashboard page
+        env:
+          METOFFICE_API_KEY: ${{ secrets.METOFFICE_API_KEY }}
+        run: python3 generate.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "kindle-dashboard"
+          git config user.email "kindle-dashboard@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || (git commit -m "Hourly dashboard update" && git push)
